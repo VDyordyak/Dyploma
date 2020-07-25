@@ -1,0 +1,53 @@
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <script>
+    function convert() {
+
+      var input = document.getElementById("input").value.trim();
+      var display = true;
+      var button = document.getElementById("render");
+      button.disabled = display.disabled = true;
+      output = document.getElementById('output');
+      output.innerHTML = '';
+      MathJax.texReset();
+      var options = MathJax.getMetricsFor(output);
+      options.display = display.checked;
+      MathJax.tex2chtmlPromise(input, options).then(function (node) {
+        output.appendChild(node);
+        MathJax.startup.document.clear();
+        MathJax.startup.document.updateDocument();
+      }).catch(function (err) {
+        output.appendChild(document.createElement('pre')).appendChild(document.createTextNode(err.message));
+      }).then(function () {
+        button.disabled = display.disabled = false;
+      });
+    }
+    function openForm() {
+      document.getElementById("myForm").style.display = "block";
+    }
+
+    function closeForm() {
+      document.getElementById("myForm").style.display = "none";
+    }
+    function saveon() {
+      document.getElementById("id_answers-0-text").value=document.getElementById("input").value;
+    }
+  </script>
+</head>
+<body>
+<div class="chat-popup" id="myForm">
+  <div class="form-container">
+    <h1>Add formula</h1>
+  	<textarea id="input" rows="15" cols="10">x = {-b \pm \sqrt{b^2-4ac} \over 2a}.</textarea>
+  	<br/>
+  	<input class="btn" type="button" value="Show Pre-view" id="render" onclick="convert()" />
+  	<br clear="all" />
+  	<div id="output"></div>
+  	<br/>
+  	<button type="button" class="btn" onclick="saveon()">Save in form</button>
+  	<button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+  </div>
+</div>
+</body>

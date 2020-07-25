@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Welcome to the USTP! <span class="icon-emo-happy"></span></h2>
+  <p class="lead">
+    If you already have an account, go ahead and <a href="{% url 'login' %}">log in</a>. If you are new to USTP, get started
+    by creating a <a href="{% url 'student_signup' %}">student account</a> or a <a href="{% url 'teacher_signup' %}">teacher account</a>.
+  </p>
+  <hr>
+  <h3>What's this about?</h3>
+  <p>
+    This is version 0.8 that will be forse on Github! Instruction of local running (Another now not validated)
+    is on Django documentation:<br>
+  </p>
+  <a href="https://docs.djangoproject.com/en/3.0/intro/tutorial01/">How you run it localy</a>
+  <br>
+  <h3>Link inside project:</h3>
+    <li><a href="{% url 'home' %}">http://127.0.0.1:8000/</a></li>
+    <li><a href="http://127.0.0.1:8000/admin/login/?next=/admin/">http://127.0.0.1:8000/admin</a></li>
+{% endblock %}

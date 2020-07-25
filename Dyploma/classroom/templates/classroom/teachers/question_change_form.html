@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags crispy_forms_filters %}
+
+{% block content %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'teachers:quiz_change_list' %}">My Quizzes</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'teachers:quiz_change' quiz.pk %}">{{ quiz.name }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ question.text }}</li>
+    </ol>
+  </nav>
+  <h2 class="mb-3">{{ question.txt }}</h2>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ formset.management_form }}
+    {{ form|crispy }}
+    <div class="card mb-3{% if formset.errors %} border-danger{% endif %}">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-6">
+            <strong>Answers</strong>
+          </div>
+          <div class="col-2">
+            <strong>Correct?</strong>
+          </div>
+          <div class="col-2">
+            <strong>Delete?</strong>
+          </div>
+          {% if quiz.type_of_quiz == 'CL' %}
+          <div class="col-2">
+            <strong>Formula?</strong>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% for error in formset.non_form_errors %}
+        <div class="card-body bg-danger border-danger text-white py-2">{{ error }}</div>
+      {% endfor %}
+      <div class="list-group list-group-flush list-group-formset">
+        {% for form in formset %}
+          <div class="list-group-item">
+            <div class="row">
+              <div class="col-6">
+                {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                {% if quiz.type_of_quiz == 'CL' %}
+                  {{ form.text|as_crispy_field }}
+                {%elif quiz.type_of_quiz == 'WR' %}
+                  {{ form.correct_text|as_crispy_field }}
+                {% else %}
+                  {{ form.code_text|as_crispy_field }}
+                  {{ form.text|as_crispy_field }}
+                {%endif%}
+                {% if form.instance.pk and form.text.value != form.instance.text %}<p class="mb-0 mt-1"><small class="text-muted font-italic"><strong>Old answer:</strong> {{ form.instance.text }}</small></p>{% endif %}
+              </div>
+              <div class="col-2">
+                {{ form.is_correct }}
+              </div>
+              <div class="col-2">
+                {% if form.instance.pk %}
+                  {{ form.DELETE }}
+                {% endif %}
+              </div>
+              {% if quiz.type_of_quiz == 'CL' %}
+              <div class="col-2">
+                <button class="open-button btn" type="button" onclick="openForm()">Add formula</button>
+                {% include "classroom\dropupformula.html" %}
+              </div>
+              {%endif%}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% if quiz.type_of_quiz == 'CL' %}
+    <p>
+      <small class="form-text text-muted">Your question may have at least <strong>2</strong> answers and maximum <strong>10</strong> answers. Select at least one correct answer.</small>
+    </p>
+    {% endif %}
+    <button type="submit" class="btn btn-success">Save changes</button>
+    <a href="{% url 'teachers:quiz_change' quiz.pk %}" class="btn btn-outline-secondary" role="button">Nevermind</a>
+    <a href="{% url 'teachers:question_delete' quiz.pk question.pk %}" class="btn btn-danger float-right">Delete</a>
+  </form>
+{% endblock %}
